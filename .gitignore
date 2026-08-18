@@ -1,0 +1,16 @@
+.idea/
+*.iml
+target/
+build/
+*.class
+
+/shelf/
+/workspace.xml
+
+# Logs
+*.log
+
+# Local configuration / secrets
+.env
+application-local.properties
+application-local.yml

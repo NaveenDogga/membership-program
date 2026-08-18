@@ -1,0 +1,100 @@
+### FirstClub Membership — request collection (IntelliJ HTTP client / VS Code REST Client)
+@base = http://localhost:8080/api/v1
+
+### Plans with tier options and prices
+GET {{base}}/plans
+
+### Tiers with effective benefits and unlock criteria
+GET {{base}}/tiers
+
+### Demo users
+GET {{base}}/users
+
+### Tier eligibility with per-criterion progress
+GET {{base}}/users/1/tier-eligibility
+
+### Subscribe (idempotent)
+POST {{base}}/subscriptions
+Content-Type: application/json
+Idempotency-Key: attempt-001
+
+{ "userId": 1, "planCode": "MONTHLY", "tierCode": "SILVER" }
+
+### Current membership and expiry
+GET {{base}}/users/1/membership
+
+### Place an order (drives tier progression)
+POST {{base}}/orders
+Content-Type: application/json
+
+{ "userId": 1, "totalAmount": 2500 }
+
+### Upgrade — immediate, prorated
+POST {{base}}/subscriptions/1/upgrade
+Content-Type: application/json
+Idempotency-Key: upgrade-001
+
+{ "tierCode": "GOLD" }
+
+### Downgrade — scheduled for period end
+POST {{base}}/subscriptions/1/downgrade
+Content-Type: application/json
+
+{ "tierCode": "SILVER" }
+
+### Cancel at period end
+POST {{base}}/subscriptions/1/cancel
+Content-Type: application/json
+
+{ "immediate": false }
+
+### Cancel immediately
+POST {{base}}/subscriptions/1/cancel
+Content-Type: application/json
+
+{ "immediate": true }
+
+### Audit trail
+GET {{base}}/subscriptions/1/events
+
+### Checkout preview with membership applied
+POST {{base}}/checkout/preview
+Content-Type: application/json
+
+{
+  "userId": 1,
+  "deliveryFee": 49,
+  "items": [
+    { "sku": "SKU-1", "category": "ELECTRONICS", "unitPrice": 4999, "quantity": 1 },
+    { "sku": "SKU-2", "category": "GROCERY", "unitPrice": 250, "quantity": 3 }
+  ]
+}
+
+### Active benefits for a member
+GET {{base}}/users/1/benefits
+
+### Reconfigure a tier benefit at runtime
+PUT {{base}}/admin/tiers/GOLD/benefits
+Content-Type: application/json
+
+{
+  "type": "EXTRA_DISCOUNT",
+  "description": "9% member discount on electronics",
+  "config": { "percentage": "9", "maxDiscount": "900", "categories": "ELECTRONICS" }
+}
+
+### Reconfigure an unlock criterion at runtime
+PUT {{base}}/admin/tiers/GOLD/criteria
+Content-Type: application/json
+
+{
+  "type": "MIN_ORDERS_IN_WINDOW",
+  "description": "At least 2 orders in the last 30 days",
+  "config": { "minOrders": "2", "windowDays": "30" }
+}
+
+### Run the expiry / renewal sweep now
+POST {{base}}/admin/sweeps/lifecycle
+
+### Run tier re-evaluation now
+POST {{base}}/admin/sweeps/tier-evaluation

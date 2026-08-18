@@ -1,0 +1,40 @@
+spring:
+  application:
+    name: membership-program
+  datasource:
+    url: jdbc:h2:mem:membership;DB_CLOSE_DELAY=-1;DB_CLOSE_ON_EXIT=FALSE
+    driver-class-name: org.h2.Driver
+    username: sa
+    password: ""
+    hikari:
+      maximum-pool-size: 20
+  jpa:
+    hibernate:
+      ddl-auto: update
+    open-in-view: false
+    properties:
+      hibernate:
+        jdbc:
+          time_zone: UTC
+  h2:
+    console:
+      enabled: true
+      path: /h2-console
+  jackson:
+    default-property-inclusion: non_null
+
+server:
+  port: 8080
+
+springdoc:
+  swagger-ui:
+    path: /swagger-ui.html
+
+membership:
+  seed-demo-data: true
+  scheduler:
+    # Lifecycle sweep: expiry, auto-renew, apply scheduled downgrades
+    lifecycle-cron: "0 */5 * * * *"
+    # Tier re-evaluation sweep: auto-upgrade users who crossed a threshold
+    tier-evaluation-cron: "0 0 * * * *"
+    batch-size: 200

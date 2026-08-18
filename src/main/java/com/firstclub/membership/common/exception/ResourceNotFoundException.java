@@ -1,0 +1,12 @@
+package com.firstclub.membership.common.exception;
+
+public class ResourceNotFoundException extends RuntimeException {
+
+    public ResourceNotFoundException(String message) {
+        super(message);
+    }
+
+    public static ResourceNotFoundException of(String type, Object identifier) {
+        return new ResourceNotFoundException(type + " not found: " + identifier);
+    }
+}
